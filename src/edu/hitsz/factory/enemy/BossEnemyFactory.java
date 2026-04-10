@@ -8,13 +8,13 @@ import edu.hitsz.basic.AbstractFlyingObject;
 
 public class BossEnemyFactory extends EnemyFactory{
     @Override
-    public AbstractFlyingObject create(int positionX, int positionY, int speedX, int speedY) {
+    public AbstractFlyingObject create() {
         return new BossEnemy(
                 (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.BOSS_ENEMY_IMAGE.getWidth())),
                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
-                8,
+                2,
                 0,
-                30
+                300
         );
     }
 }

@@ -48,7 +48,7 @@ public class HeroAircraft extends AbstractAircraft {
      * @return 射击出的子弹List
      */
     public List<BaseBullet> shoot() {
-        return this.shootStrategy.shootStrategy(this, this.direction, this.shootNum, this.power);
+        return this.shootStrategy.heroShootStrategy(this, this.direction, this.shootNum, this.power);
     }
 
 }

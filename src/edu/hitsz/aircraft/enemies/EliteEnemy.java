@@ -33,6 +33,6 @@ public class EliteEnemy extends MobEnemy{
 
     @Override
     public List<BaseBullet> shoot() {
-        return this.shootStrategy.shootStrategy(this, this.direction, this.shootNum, this.power);
+        return this.shootStrategy.enemyShootStrategy(this, this.direction, this.shootNum, this.power);
     }
 }

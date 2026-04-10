@@ -29,7 +29,7 @@ public class MobEnemy extends AbstractAircraft {
 
     @Override
     public List<BaseBullet> shoot() {
-        return this.shootStrategy.shootStrategy(this, 0,0, 0);
+        return this.shootStrategy.enemyShootStrategy(this, 0,0, 0);
     }
 
 }

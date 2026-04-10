@@ -8,6 +8,7 @@ import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.factory.RandomCreator;
 import edu.hitsz.factory.enemy.EnemyFactory;
 import edu.hitsz.shootStrategy.NoneShoot;
+import edu.hitsz.shootStrategy.RingShoot;
 import edu.hitsz.shootStrategy.ScatterShoot;
 import edu.hitsz.shootStrategy.StraightShoot;
 
@@ -62,6 +63,8 @@ public class Game extends JPanel {
 
     //当前玩家分数
     private int score = 0;
+    // 一段时间内得分的增量，主要是用来记录boss何时该出现的
+    private int deltaScore = 0;
 
     //游戏结束标志
     private boolean gameOverFlag = false;
@@ -119,10 +122,13 @@ public class Game extends JPanel {
                     }
 
                     // 产生Boss敌机
-                    if(curBossNum < 1){
+                    if(curBossNum < 1 && deltaScore >= 100){
                         enemyFactory = new BossEnemyFactory();
-                        enemyAircrafts.add((AbstractAircraft) enemyFactory.create());
-                        curBossNum++;
+                        // 设置boss的攻击方式
+                        AbstractAircraft boss = (AbstractAircraft) enemyFactory.create();
+                        boss.setShootStrategy(new RingShoot());
+                        enemyAircrafts.add(boss);
+                        curBossNum = 1;
                     }
                 }
 
@@ -159,6 +165,7 @@ public class Game extends JPanel {
             heroBullets.addAll(heroAircraft.shoot());
             // TODO 敌机射击
             for(AbstractAircraft enemyAircraft : enemyAircrafts){
+                System.out.println("yes");
                 enemyBullets.addAll(enemyAircraft.shoot());
             }
         }
@@ -219,22 +226,39 @@ public class Game extends JPanel {
                     enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
                     if (enemyAircraft.notValid()) {
-                        // TODO 获得分数，产生道具补给
-                        score += 10;
+                        // 在敌机爆炸处产生道具
+                        int posX = enemyAircraft.getLocationX();
+                        int posY = enemyAircraft.getLocationY();
+                        // 随机道具的速度
+                        int[] speeds = randomCreator.randomSpeed();
 
-                        // 有概率产生道具
-                        if(ThreadLocalRandom.current().nextDouble(1) < PROP_PROB){
-                            // 在敌机爆炸处产生道具
-                            int posX = enemyAircraft.getLocationX();
-                            int posY = enemyAircraft.getLocationY();
-                            // 随机道具的速度
-                            int[] speeds = randomCreator.randomSpeed();
-                            props.add((AbstractProp) randomCreator.randomlyCreateProp().create(
-                                    posX,
-                                    posY,
-                                    speeds[0],
-                                    speeds[1]
-                            ));
+                        // 看被击毁的是不是boss机
+                        if(enemyAircraft.getClass().getName().endsWith("BossEnemy")){
+                            curBossNum = 0;
+                            deltaScore = 0;
+                            score += 500;
+                            // 随机掉落三个道具
+                            for(int i=0;i<3;i++){
+                                props.add((AbstractProp) randomCreator.randomlyCreateProp().create(
+                                        posX,
+                                        posY,
+                                        speeds[0],
+                                        speeds[1]
+                                ));
+                            }
+                        }else{
+                            // TODO 获得分数，产生道具补给
+                            score += 10;
+                            deltaScore += 10;
+                            // 有概率产生道具
+                            if(ThreadLocalRandom.current().nextDouble(1) < PROP_PROB){
+                                props.add((AbstractProp) randomCreator.randomlyCreateProp().create(
+                                        posX,
+                                        posY,
+                                        speeds[0],
+                                        speeds[1]
+                                ));
+                            }
                         }
                     }
                 }
@@ -258,12 +282,13 @@ public class Game extends JPanel {
                 if(gotItem.equals("PropBlood")){
                     heroAircraft.setHp(Math.min(heroAircraft.getHp() + 20, heroAircraft.getMaxHp()));
                 }else if(gotItem.equals("PropBullet")){
-                    // 变成双排直射
-                    heroAircraft.setShootNum(2);
-                }else if(gotItem.equals("PropBulletPlus")){
-                    // 三排散射
+                    // 变成三排散射
                     heroAircraft.setShootNum(3);
                     heroAircraft.setShootStrategy(new ScatterShoot());
+                }else if(gotItem.equals("PropBulletPlus")){
+                    // 环射
+                    heroAircraft.setShootNum(10);
+                    heroAircraft.setShootStrategy(new RingShoot());
                 }else if(gotItem.equals("PropBomb")){
                     System.out.println("爆炸");
                 }else if(gotItem.equals("PropFreeze")){
