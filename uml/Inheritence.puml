@@ -72,6 +72,72 @@ class EnemyBullet {
      int speedX, int speedY, int power)
 }
 
+class EliteEnemy{
+    # power : int
+    # direction : int
+    # shootNum : int
+    + EliteEnemy(int locationX, int locationY,
+    int speedX, int speedY, int hp)
+    + shoot : List<BaseBullet>
+}
+MobEnemy <|-- EliteEnemy
+
+class ElitePlusEnemy{
+    + ElitePlusEnemy(int locationX, int locationY,
+    int speedX, int speedY, int hp)
+}
+EliteEnemy <|-- ElitePlusEnemy
+
+class EliteProEnemy{
+    + EliteProEnemy(int locationX, int locationY,
+    int speedX, int speedY, int hp)
+}
+EliteEnemy <|-- EliteProEnemy
+
+class BossEnemy{
+    + BossEnemy(int locationX, int locationY, int speedX,
+    int speedY, int hp)
+}
+EliteEnemy <|-- BossEnemy
+
+class AbstractProp{
+    + AbstractProp(int locationX, int locationY,
+    int speedX, int speedY)
+    + forward() : void
+}
+AbstractFlyingObject <|-- AbstractProp
+
+class PropBlood{
+    + PropBlood(int locationX, int locationY,
+    int speedX, int speedY)
+}
+AbstractProp <|-- PropBlood
+
+class PropBomb{
+    + PropBomb(int locationX, int locationY,
+    int speedX, int speedY)
+}
+AbstractProp <|-- PropBomb
+
+class PropBullet{
+    + PropBullet(int locationX, int locationY,
+    int speedX, int speedY)
+}
+AbstractProp <|-- PropBullet
+
+class PropBulletPlus{
+    + PropBulletPlus(int locationX, int locationY,
+    int speedX, int speedY)
+}
+AbstractProp <|-- PropBulletPlus
+
+class PropFreeze{
+    + PropFreeze(int locationX, int locationY,
+    int speedX, int speedY)
+}
+AbstractProp <|-- PropFreeze
+
+
 BaseBullet <|-- HeroBullet
 BaseBullet <|-- EnemyBullet
 

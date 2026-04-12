@@ -1,0 +1,20 @@
+@startuml
+
+interface AircraftFactory{
+    + create() : AbstractFlyingObject
+    + create(int positionX, int positionY,
+    int speedX, int speedY) : AbstractFlyingObject
+}
+
+class PropFactory{
+    + create() : AbstractFlyingObject
+    + create(int positionX, int positionY,
+    int speedX, int speedY) : AbstractFlyingObject
+}
+AircraftFactory <|.. PropFactory
+
+
+
+
+@enduml
+

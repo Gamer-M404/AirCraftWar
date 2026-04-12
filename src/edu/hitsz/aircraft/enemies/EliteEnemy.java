@@ -8,13 +8,13 @@ import java.util.List;
 
 public class EliteEnemy extends MobEnemy{
     // 子弹的伤害
-    private int power = 20;
+    protected int power = 20;
 
     // 子弹的方向
-    private int direction = 1;
+    protected int direction = 1;
 
     // 发射子弹的数目
-    private int shootNum = 1;
+    protected int shootNum = 1;
 
     public EliteEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
