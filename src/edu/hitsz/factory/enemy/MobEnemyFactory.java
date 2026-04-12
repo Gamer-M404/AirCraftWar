@@ -5,7 +5,7 @@ import edu.hitsz.application.ImageManager;
 import edu.hitsz.application.Main;
 import edu.hitsz.basic.AbstractFlyingObject;
 
-public class MobEnemyFactory extends EnemyFactory {
+public class MobEnemyFactory extends EnemyCreator {
     @Override
     public AbstractFlyingObject create() {
         return new MobEnemy(

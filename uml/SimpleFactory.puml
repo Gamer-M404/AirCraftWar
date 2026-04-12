@@ -1,20 +1,60 @@
 @startuml
 
-interface AircraftFactory{
-    + create() : AbstractFlyingObject
-    + create(int positionX, int positionY,
-    int speedX, int speedY) : AbstractFlyingObject
-}
 
 class PropFactory{
-    + create() : AbstractFlyingObject
     + create(int positionX, int positionY,
-    int speedX, int speedY) : AbstractFlyingObject
+    int speedX, int speedY, String type) : AbstractProp
 }
-AircraftFactory <|.. PropFactory
 
+class AbstractProp{
+    + AbstractProp(int locationX, int locationY,
+    int speedX, int speedY)
+    + forward() : void
+}
 
+PropFactory ..> AbstractProp
 
+class PropBlood{
+    + PropBlood(int locationX, int locationY,
+    int speedX, int speedY)
+}
+AbstractProp <|-- PropBlood
+
+class PropBomb{
+    + PropBomb(int locationX, int locationY,
+    int speedX, int speedY)
+}
+AbstractProp <|-- PropBomb
+
+class PropBullet{
+    + PropBullet(int locationX, int locationY,
+    int speedX, int speedY)
+}
+AbstractProp <|-- PropBullet
+
+class PropBulletPlus{
+    + PropBulletPlus(int locationX, int locationY,
+    int speedX, int speedY)
+}
+AbstractProp <|-- PropBulletPlus
+
+class PropFreeze{
+    + PropFreeze(int locationX, int locationY,
+    int speedX, int speedY)
+}
+AbstractProp <|-- PropFreeze
+
+note left of PropFactory
+return switch (type) {
+            case "PropBlood" -> new PropBlood(positionX, positionY, speedX, speedY);
+            case "PropBomb" -> new PropBomb(positionX, positionY, speedX, speedY);
+            case "PropBullet" -> new PropBullet(positionX, positionY, speedX, speedY);
+            case "PropBulletPlus" -> new PropBulletPlus(positionX, positionY, speedX, speedY);
+            case "PropFreeze" -> new PropFreeze(positionX, positionY, speedX, speedY);
+            default -> null;
+        };
+
+end note
 
 @enduml
 

@@ -2,6 +2,7 @@ package edu.hitsz.factory;
 
 import edu.hitsz.factory.enemy.*;
 import edu.hitsz.factory.prop.*;
+import edu.hitsz.prop.AbstractProp;
 import edu.hitsz.prop.PropBullet;
 
 import java.util.HashMap;
@@ -10,8 +11,11 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomCreator {
 
+    // 用于产生道具的简单工厂
+    PropFactory propFactory = new PropFactory();
+
     // 随机生成一种敌人工厂
-    public EnemyFactory randomlyCreateEnemy(){
+    public EnemyCreator randomlyCreateEnemy(){
         // 随机产生一个[0, 1]之间的值
         double r = ThreadLocalRandom.current().nextDouble(1);
         // 定义不同敌机的生成概率
@@ -35,7 +39,7 @@ public class RandomCreator {
     }
 
     // 随机生成一个道具
-    public PropFactory randomlyCreateProp(){
+    public AbstractProp randomlyCreateProp(int positionX, int positionY, int speedX, int speedY){
         // 依旧随机生成一个[0，1]之间的数
         double r = ThreadLocalRandom.current().nextDouble(1);
         // 设置一下各道具出现的概率
@@ -46,15 +50,15 @@ public class RandomCreator {
         double FREEZE_PROP = 0.2;
 
         if(r < BOMB_PROP){
-            return new PropBloodFactory();
+            return this.propFactory.create(positionX, positionY, speedX, speedY, "PropBlood");
         }else if (r < BOMB_PROP + BOMB_PROP){
-            return new PropBombFactory();
+            return this.propFactory.create(positionX, positionY, speedX, speedY, "PropBomb");
         }else if(r < BLOOD_PROP + BOMB_PROP + BULLET_PROP){
-            return new PropBulletFactory();
+            return this.propFactory.create(positionX, positionY, speedX, speedY, "PropBullet");
         }else if(r < BLOOD_PROP + BOMB_PROP + BULLET_PROP + BULLET_PLUS_PROP){
-            return  new PropBulletPlusFactory();
+            return this.propFactory.create(positionX, positionY, speedX, speedY, "PropBulletPlus");
         }else if(r < BLOOD_PROP + BOMB_PROP + BULLET_PROP + BULLET_PLUS_PROP + FREEZE_PROP){
-            return new PropFreezeFactory();
+            return this.propFactory.create(positionX, positionY, speedX, speedY, "PropFreeze");
         }else{
             return null;
         }

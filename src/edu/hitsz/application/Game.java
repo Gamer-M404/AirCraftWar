@@ -2,11 +2,11 @@ package edu.hitsz.application;
 
 import edu.hitsz.aircraft.*;
 import edu.hitsz.factory.enemy.BossEnemyFactory;
+import edu.hitsz.factory.enemy.EnemyCreator;
 import edu.hitsz.prop.AbstractProp;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.factory.RandomCreator;
-import edu.hitsz.factory.enemy.EnemyFactory;
 import edu.hitsz.shootStrategy.NoneShoot;
 import edu.hitsz.shootStrategy.RingShoot;
 import edu.hitsz.shootStrategy.ScatterShoot;
@@ -43,7 +43,7 @@ public class Game extends JPanel {
     private final List<AbstractProp> props;
 
     // 创建飞行物的工厂
-    private EnemyFactory enemyFactory;
+    private EnemyCreator enemyFactory;
 
     private RandomCreator randomCreator;
 
@@ -239,12 +239,7 @@ public class Game extends JPanel {
                             score += 500;
                             // 随机掉落三个道具
                             for(int i=0;i<3;i++){
-                                props.add((AbstractProp) randomCreator.randomlyCreateProp().create(
-                                        posX,
-                                        posY,
-                                        speeds[0],
-                                        speeds[1]
-                                ));
+                                props.add((AbstractProp) randomCreator.randomlyCreateProp(posX, posY, speeds[0], speeds[1]));
                             }
                         }else{
                             // TODO 获得分数，产生道具补给
@@ -252,12 +247,7 @@ public class Game extends JPanel {
                             deltaScore += 10;
                             // 有概率产生道具
                             if(ThreadLocalRandom.current().nextDouble(1) < PROP_PROB){
-                                props.add((AbstractProp) randomCreator.randomlyCreateProp().create(
-                                        posX,
-                                        posY,
-                                        speeds[0],
-                                        speeds[1]
-                                ));
+                                props.add((AbstractProp) randomCreator.randomlyCreateProp(posX, posY, speeds[0], speeds[1]));
                             }
                         }
                     }
