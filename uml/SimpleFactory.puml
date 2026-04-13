@@ -1,60 +1,51 @@
 @startuml
 
-
 class PropFactory{
-    + create(int positionX, int positionY,
-    int speedX, int speedY, String type) : AbstractProp
+    + create(int positionX, int positionY, int speedX, int speedY, String type) : AbstractProp
 }
 
-class AbstractProp{
-    + AbstractProp(int locationX, int locationY,
-    int speedX, int speedY)
+abstract class AbstractProp{
+    + AbstractProp(int locationX, int locationY, int speedX, int speedY)
     + forward() : void
 }
 
-PropFactory ..> AbstractProp
+PropFactory ..> AbstractProp : creates
 
 class PropBlood{
-    + PropBlood(int locationX, int locationY,
-    int speedX, int speedY)
+    + PropBlood(int locationX, int locationY, int speedX, int speedY)
 }
 AbstractProp <|-- PropBlood
 
 class PropBomb{
-    + PropBomb(int locationX, int locationY,
-    int speedX, int speedY)
+    + PropBomb(int locationX, int locationY, int speedX, int speedY)
 }
 AbstractProp <|-- PropBomb
 
 class PropBullet{
-    + PropBullet(int locationX, int locationY,
-    int speedX, int speedY)
+    + PropBullet(int locationX, int locationY, int speedX, int speedY)
 }
 AbstractProp <|-- PropBullet
 
 class PropBulletPlus{
-    + PropBulletPlus(int locationX, int locationY,
-    int speedX, int speedY)
+    + PropBulletPlus(int locationX, int locationY, int speedX, int speedY)
 }
 AbstractProp <|-- PropBulletPlus
 
 class PropFreeze{
-    + PropFreeze(int locationX, int locationY,
-    int speedX, int speedY)
+    + PropFreeze(int locationX, int locationY, int speedX, int speedY)
 }
 AbstractProp <|-- PropFreeze
 
+' 原生多行note，直接写代码，无反引号
 note left of PropFactory
 return switch (type) {
-            case "PropBlood" -> new PropBlood(positionX, positionY, speedX, speedY);
-            case "PropBomb" -> new PropBomb(positionX, positionY, speedX, speedY);
-            case "PropBullet" -> new PropBullet(positionX, positionY, speedX, speedY);
-            case "PropBulletPlus" -> new PropBulletPlus(positionX, positionY, speedX, speedY);
-            case "PropFreeze" -> new PropFreeze(positionX, positionY, speedX, speedY);
-            default -> null;
-        };
-
+    case "PropBlood" -> new PropBlood(positionX, positionY, speedX, speedY);
+    case "PropBomb" -> new PropBomb(positionX, positionY, speedX, speedY);
+    case "PropBullet" -> new PropBullet(positionX, positionY, speedX, speedY);
+    case "PropBulletPlus" -> new PropBulletPlus(positionX, positionY, speedX, speedY);
+    case "PropFreeze" -> new PropFreeze(positionX, positionY, speedX, speedY);
+    default -> null;
+};
 end note
 
 @enduml
-

@@ -1,0 +1,47 @@
+@startuml
+interface EnemyFactory{
+    + {abstract} create() : AbstractFlyingObject
+}
+
+class EnemyCreator{
+    + create() : AbstractFlyingObject
+}
+EnemyFactory <|.. EnemyCreator
+
+class MobEnemyFactory{
+    + create() : AbstractFlyingObject
+}
+EnemyCreator <|-- MobEnemyFactory
+
+class EliteEnemyFactory{
+    + create() : AbstractFlyingObject
+}
+EnemyCreator <|-- EliteEnemyFactory
+
+class ElitePlusEnemyFactory{
+    + create() : AbstractFlyingObject
+}
+EnemyCreator <|-- ElitePlusEnemyFactory
+
+class EliteProEnemyFactory{
+    + create() : AbstractFlyingObject
+}
+EnemyCreator <|-- EliteProEnemyFactory
+
+class BossEnemyFactory{
+    + create() : AbstractFlyingObject
+}
+EnemyCreator <|-- BossEnemyFactory
+
+class MobEnemy{}
+class EliteEnemy{}
+class ElitePlusEnemy{}
+class EliteProEnemy{}
+class BossEnemy{}
+
+MobEnemyFactory ..> MobEnemy
+EliteEnemyFactory ..> EliteEnemy
+ElitePlusEnemyFactory ..> ElitePlusEnemy
+EliteProEnemyFactory ..> EliteProEnemy
+BossEnemyFactory ..> BossEnemy
+@enduml

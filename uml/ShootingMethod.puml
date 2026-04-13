@@ -1,0 +1,87 @@
+@startuml
+
+interface Strategy{
+    + heroShootStrategy(AbstractAircraft plane,
+    int direction, int shootNum, int power) : List<BaseBullet>
+
+    + enemyShootStrategy(AbstractAircraft plane,
+    int direction, int shootNum, int power) : List<BaseBullet>
+}
+
+class NoneShoot{
+    + heroShootStrategy(AbstractAircraft plane,
+    int direction, int shootNum, int power) : List<BaseBullet>
+
+    + enemyShootStrategy(AbstractAircraft plane,
+    int direction, int shootNum, int power) : List<BaseBullet>
+}
+
+class StraightShoot{
+    + heroShootStrategy(AbstractAircraft plane,
+    int direction, int shootNum, int power) : List<BaseBullet>
+
+   + enemyShootStrategy(AbstractAircraft plane,
+   int direction, int shootNum, int power) : List<BaseBullet>
+}
+
+class ScatterShoot{
+    + heroShootStrategy(AbstractAircraft plane,
+    int direction, int shootNum, int power) : List<BaseBullet>
+
+    emyShootStrategy(AbstractAircraft plane,
+    int direction, int shootNum, int power) : List<BaseBullet>
+}
+
+class RingShoot{
+    + heroShootStrategy(AbstractAircraft plane,
+    int direction, int shootNum, int power) : List<BaseBullet>
+
+    emyShootStrategy(AbstractAircraft plane,
+    int direction, int shootNum, int power) : List<BaseBullet>
+}
+
+Strategy <|.. NoneShoot
+Strategy <|.. RingShoot
+Strategy <|.. ScatterShoot
+Strategy <|.. StraightShoot
+
+abstract class AbstractAircraft{
+    # shootStrategy : Strategy
+    + setShootStrategy(Strategy strategy):void
+    + {abstract} shoot():List<BaseBullet>
+}
+
+class HeroAircraft{
+    + shoot():List<BaseBullet>
+}
+
+class MobEnemy{
+    + shoot():List<BaseBullet>
+}
+
+class EliteEnemy{
+    + shoot():List<BaseBullet>
+}
+
+class ELitePlusEnemy{
+    + shoot():List<BaseBullet>
+}
+
+class ELiteProEnemy{
+    + shoot():List<BaseBullet>
+}
+
+class BossEnemy{
+    + shoot():List<BaseBullet>
+}
+
+AbstractAircraft <|-- HeroAircraft
+AbstractAircraft <|-- MobEnemy
+MobEnemy <|-- EliteEnemy
+EliteEnemy <|-- ELitePlusEnemy
+EliteEnemy <|-- ELiteProEnemy
+EliteEnemy <|-- BossEnemy
+
+AbstractAircraft ..> Strategy
+
+@enduml
