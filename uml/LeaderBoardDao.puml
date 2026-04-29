@@ -1,0 +1,43 @@
+@startuml
+
+class LeaderBoardItem
+{
+    - username : String
+    - score : int
+    - time : String
+
+    + LeaderBoardItem(String username, int score,String time)
+    + showInfo() : String
+}
+
+Interface LeaderBoardDao
+{
+    + loadData(String path) : void
+    + saveData(String path) : void
+    + doAdd(LeaderBoardItem item) : void
+    + doDelete(LeaderBoardItem item) : void
+    + getAllItems() : List<LeaderBoardItem>
+    + showTheBoard() : void
+}
+
+class LeaderBoardDaoImpl
+{
+    - items : List<LeaderBoardItem>
+    - {static} singleImpl : LeaderBoardDaoImpl
+
+    - LeaderBoardDaoImpl()
+    + loadData(String path) : void
+    + saveData(String path) : void
+    + doAdd(LeaderBoardItem item) : void
+    + doDelete(LeaderBoardItem item) : void
+    + getAllItems() : List<LeaderBoardItem>
+    + showTheBoard() : void
+    + getInstance() : LeaderBoardDaoImpl
+}
+
+LeaderBoardDaoImpl --> LeaderBoardItem
+LeaderBoardDaoImpl ..|> LeaderBoardDao
+
+
+
+@enduml

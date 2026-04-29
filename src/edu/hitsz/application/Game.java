@@ -1,6 +1,8 @@
 package edu.hitsz.application;
 
 import edu.hitsz.aircraft.*;
+import edu.hitsz.dao.LeaderBoardDaoImpl;
+import edu.hitsz.dao.LeaderBoradItem;
 import edu.hitsz.factory.enemy.BossEnemyFactory;
 import edu.hitsz.factory.enemy.EnemyCreator;
 import edu.hitsz.prop.AbstractProp;
@@ -15,6 +17,9 @@ import edu.hitsz.shootStrategy.StraightShoot;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
@@ -32,6 +37,9 @@ public class Game extends JPanel {
     private final Timer timer;
     //时间间隔(ms)，控制刷新频率
     private final int timeInterval = 40;
+
+    // 得分榜访问对象
+    LeaderBoardDaoImpl leaderBoardDaoImpl;
 
     // 产生道具的概率
     private final double PROP_PROB = 0.3;
@@ -72,6 +80,7 @@ public class Game extends JPanel {
     public Game() {
 
         heroAircraft = HeroAircraft.getInstance();
+        leaderBoardDaoImpl = LeaderBoardDaoImpl.getInstance();
         // 设置英雄机初始发射模式
         heroAircraft.setShootStrategy(new StraightShoot());
 
@@ -165,7 +174,6 @@ public class Game extends JPanel {
             heroBullets.addAll(heroAircraft.shoot());
             // TODO 敌机射击
             for(AbstractAircraft enemyAircraft : enemyAircrafts){
-                System.out.println("yes");
                 enemyBullets.addAll(enemyAircraft.shoot());
             }
         }
@@ -312,6 +320,24 @@ public class Game extends JPanel {
     private void checkResultAction(){
         // 游戏结束检查英雄机是否存活
         if (heroAircraft.getHp() <= 0) {
+            String dataBasePath = "src/LeaderBoard/easy.txt";
+            // 读取历史得分榜并打印
+            leaderBoardDaoImpl.loadData(dataBasePath);
+
+            // 格式化时间
+            DateTimeFormatter formatter  = DateTimeFormatter.ofPattern("MM-dd HH:mm");
+            String now = LocalDateTime.now().format(formatter);
+            // 创建当局比赛的条目
+            LeaderBoradItem item = new LeaderBoradItem("Unknown", score, now);
+            System.out.println(item.showInfo());
+            leaderBoardDaoImpl.doAdd(item);
+
+            // 打印得分榜
+            leaderBoardDaoImpl.showTheBoard();
+
+            // 存回总榜
+            leaderBoardDaoImpl.saveData(dataBasePath);
+
             timer.cancel(); // 取消定时器并终止所有调度任务
             gameOverFlag = true;
             System.out.println("Game Over!");
