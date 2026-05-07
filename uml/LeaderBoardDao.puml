@@ -17,6 +17,7 @@ Interface LeaderBoardDao
     + doAdd(LeaderBoardItem item) : void
     + doDelete(LeaderBoardItem item) : void
     + getAllItems() : List<LeaderBoardItem>
+    + removeAll() : void
     + showTheBoard() : void
 }
 
@@ -31,6 +32,7 @@ class LeaderBoardDaoImpl
     + doAdd(LeaderBoardItem item) : void
     + doDelete(LeaderBoardItem item) : void
     + getAllItems() : List<LeaderBoardItem>
+    + removeAll() : void
     + showTheBoard() : void
     + getInstance() : LeaderBoardDaoImpl
 }

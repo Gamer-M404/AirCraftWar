@@ -16,6 +16,8 @@ import edu.hitsz.shootStrategy.StraightShoot;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,7 +41,10 @@ public class Game extends JPanel {
     private final int timeInterval = 40;
 
     // 得分榜访问对象
-    LeaderBoardDaoImpl leaderBoardDaoImpl;
+    public static LeaderBoardDaoImpl leaderBoardDaoImpl;
+    private String dataPath;
+    public void setDataPath(String dataPath){ this.dataPath = dataPath; }
+    public String getDataPath(){ return this.dataPath; }
 
     // 产生道具的概率
     private final double PROP_PROB = 0.3;
@@ -71,15 +76,24 @@ public class Game extends JPanel {
 
     //当前玩家分数
     private int score = 0;
+    public int getScore(){ return this.score; };
     // 一段时间内得分的增量，主要是用来记录boss何时该出现的
     private int deltaScore = 0;
 
-    //游戏结束标志
-    private boolean gameOverFlag = false;
+    //游戏结束标志,没啥用
+    // private boolean gameOverFlag = false;
+
+    // 改用runnable接口实现游戏结束的逻辑
+    private Runnable onGameOver = null;
+
+    public void setOnGameOver(Runnable onGameOver){
+        this.onGameOver = onGameOver;
+    }
 
     public Game() {
 
         heroAircraft = HeroAircraft.getInstance();
+        heroAircraft.resetHero();
         leaderBoardDaoImpl = LeaderBoardDaoImpl.getInstance();
         // 设置英雄机初始发射模式
         heroAircraft.setShootStrategy(new StraightShoot());
@@ -320,27 +334,14 @@ public class Game extends JPanel {
     private void checkResultAction(){
         // 游戏结束检查英雄机是否存活
         if (heroAircraft.getHp() <= 0) {
-            String dataBasePath = "src/LeaderBoard/easy.txt";
-            // 读取历史得分榜并打印
-            leaderBoardDaoImpl.loadData(dataBasePath);
+            timer.cancel();
+            // 游戏结束触发的逻辑
+            if(this.onGameOver != null){
+                onGameOver.run();
+            }
 
-            // 格式化时间
-            DateTimeFormatter formatter  = DateTimeFormatter.ofPattern("MM-dd HH:mm");
-            String now = LocalDateTime.now().format(formatter);
-            // 创建当局比赛的条目
-            LeaderBoradItem item = new LeaderBoradItem("Unknown", score, now);
-            System.out.println(item.showInfo());
-            leaderBoardDaoImpl.doAdd(item);
 
-            // 打印得分榜
-            leaderBoardDaoImpl.showTheBoard();
 
-            // 存回总榜
-            leaderBoardDaoImpl.saveData(dataBasePath);
-
-            timer.cancel(); // 取消定时器并终止所有调度任务
-            gameOverFlag = true;
-            System.out.println("Game Over!");
         }
     };
 

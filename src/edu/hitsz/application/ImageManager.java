@@ -46,8 +46,8 @@ public class ImageManager {
 
     static {
         try {
-
-            BACKGROUND_IMAGE = ImageIO.read(new FileInputStream("src/images/bg.jpg"));
+            // 不同游戏难度应绑定不同的bg图片
+            // BACKGROUND_IMAGE = ImageIO.read(new FileInputStream("src/images/bg.jpg"));
 
             HERO_IMAGE = ImageIO.read(new FileInputStream("src/images/hero.png"));
             MOB_ENEMY_IMAGE = ImageIO.read(new FileInputStream("src/images/mob.png"));

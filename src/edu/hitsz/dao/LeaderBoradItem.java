@@ -18,4 +18,10 @@ public class LeaderBoradItem {
     public int getScore(){
         return this.score;
     }
+    public String getUsername(){
+        return this.username;
+    }
+    public String getTime(){
+        return this.time;
+    }
 }

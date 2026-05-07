@@ -18,19 +18,20 @@ public class LeaderBoardDaoImpl implements LeaderBoardDao{
 
     @Override
     public void doAdd(LeaderBoradItem item) {
-        // 插入新数据的时候，使用二分插入算法
-        int target = 0;
-        for(int l=0, r=this.items.size()-1;l<=r;){
-            target = ((l + r) >> 1);
-            if(item.getScore() > this.items.get(target).getScore()){
-                // 大了，往左找
-                r = target - 1;
-            }else{
-                // 小了，往右找
-                l = target + 1;
-            }
-        }
-        this.items.add(target, item);
+        this.items.add(item);
+//        // 插入新数据的时候，使用二分插入算法
+//        int target = 0;
+//        for(int l=0, r=this.items.size()-1;l<=r;){
+//            target = ((l + r) >> 1);
+//            if(item.getScore() > this.items.get(target).getScore()){
+//                // 大了，往左找
+//                r = target - 1;
+//            }else{
+//                // 小了，往右找
+//                l = target + 1;
+//            }
+//        }
+//        this.items.add(target, item);
     }
 
     @Override
@@ -39,11 +40,21 @@ public class LeaderBoardDaoImpl implements LeaderBoardDao{
     }
 
     @Override
+    public void doDelete(int index) {
+        this.items.remove(index);
+    }
+
+    @Override
     public List<LeaderBoradItem> getAllItems() {
         if(this.items.isEmpty()){
             return List.of();
         }
         return List.copyOf(this.items);
+    }
+
+    @Override
+    public void removeAll() {
+        this.items.clear();
     }
 
     @Override
@@ -83,4 +94,21 @@ public class LeaderBoardDaoImpl implements LeaderBoardDao{
             throw new RuntimeException(e);
         }
     }
+
+    public String[][] toStringData(){
+        String[][] res = new String[this.items.size()][3];
+        // 降序展示
+        this.items.sort((o1, o2) -> {
+            return Integer.compare(o2.getScore(), o1.getScore());
+        });
+        for (int i = 0; i < this.items.size(); i++) {
+            res[i][0] = this.items.get(i).getUsername();
+            res[i][1] = String.valueOf(this.items.get(i).getScore());
+            res[i][2] = this.items.get(i).getTime();
+        }
+        return res;
+    }
+
+    public int getDataSize(){ return this.items.size(); }
+
 }

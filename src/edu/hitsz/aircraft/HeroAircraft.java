@@ -32,6 +32,15 @@ public class HeroAircraft extends AbstractAircraft {
         super(locationX, locationY, speedX, speedY, hp);
     }
 
+    public void resetHero(){
+        heroAircraft.setHp(heroAircraft.maxHp);
+        heroAircraft.setLocation((double) Main.WINDOW_WIDTH / 2,
+                Main.WINDOW_HEIGHT - ImageManager.HERO_IMAGE.getHeight());
+        heroAircraft.shootNum = 1;
+        heroAircraft.power = 30;
+        heroAircraft.direction = -1;
+    }
+
     public static HeroAircraft getInstance(){
         return heroAircraft;
     }
@@ -41,7 +50,7 @@ public class HeroAircraft extends AbstractAircraft {
     }
 
     public void setShootNum(int shootNum) { this.shootNum = shootNum; }
-
+    public int getShootNum() { return this.shootNum; }
     @Override
     /**
      * 通过射击产生子弹
