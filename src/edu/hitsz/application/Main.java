@@ -1,6 +1,7 @@
 package edu.hitsz.application;
 
 import edu.hitsz.dao.LeaderBoradItem;
+import edu.hitsz.music.MusicManager;
 import edu.hitsz.ui.LeaderBoardTable;
 import edu.hitsz.ui.StartMenu;
 
@@ -25,6 +26,7 @@ public class Main {
     // 当前在运行的唯一游戏实例
     public static Game currentGame = null;
 
+
     public static void startGame(String dataPath){
         // 如果之前currentGame中有残存，把它清除掉
         if(currentGame != null){
@@ -40,25 +42,19 @@ public class Main {
         // 启动游戏
         cardLayout.show(cardJPanel, "game");
         currentGame.action();
+//        bgm = new MusicThread("src/videos/bgm.wav");
+//        bgm.setLoop(true);
+//        bgm.start();
     }
 
     public static void endGame(){
+        MusicManager.stopBgm();
+        MusicManager.playSound("src/videos/game_over.wav");
         String dataBasePath = currentGame.getDataPath();
         String[] tmp = dataBasePath.split("/");
         String mode = firstCharUpper(tmp[tmp.length - 1].replace(".txt", ""));
-        // 读取历史得分榜并打印
-        Game.leaderBoardDaoImpl.loadData(dataBasePath);
-        // 格式化时间
-        DateTimeFormatter formatter  = DateTimeFormatter.ofPattern("MM-dd HH:mm");
-        String now = LocalDateTime.now().format(formatter);
-        // 创建当局比赛的条目
-        LeaderBoradItem item = new LeaderBoradItem("Unknown", currentGame.getScore(), now);
-        System.out.println(item.showInfo());
-        Game.leaderBoardDaoImpl.doAdd(item);
-        // 打印得分榜
-        Game.leaderBoardDaoImpl.showTheBoard();
         // 从txt中读数据到table中，然后做展示
-        LeaderBoardTable leaderBoardTable = new LeaderBoardTable(Game.leaderBoardDaoImpl.toStringData(), dataBasePath, mode);
+        LeaderBoardTable leaderBoardTable = new LeaderBoardTable(dataBasePath, mode);
         cardJPanel.add("rank", leaderBoardTable.getMainPanel());
         // 切换到rank界面
         cardLayout.show(cardJPanel, "rank");

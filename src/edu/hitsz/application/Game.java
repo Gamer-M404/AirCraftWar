@@ -5,6 +5,7 @@ import edu.hitsz.dao.LeaderBoardDaoImpl;
 import edu.hitsz.dao.LeaderBoradItem;
 import edu.hitsz.factory.enemy.BossEnemyFactory;
 import edu.hitsz.factory.enemy.EnemyCreator;
+import edu.hitsz.music.MusicManager;
 import edu.hitsz.prop.AbstractProp;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
@@ -57,7 +58,6 @@ public class Game extends JPanel {
 
     // 创建飞行物的工厂
     private EnemyCreator enemyFactory;
-
     private RandomCreator randomCreator;
 
     //屏幕中出现的敌机最大数量
@@ -117,7 +117,9 @@ public class Game extends JPanel {
      * 游戏启动入口，执行游戏逻辑
      */
     public void action() {
-
+        // 播放bgm
+        MusicManager.setBgm("src/videos/bgm.wav", true);
+        MusicManager.playBgm();
         // 定时任务：绘制、对象产生、碰撞判定、及结束判定
         TimerTask task = new TimerTask() {
             @Override
@@ -146,6 +148,9 @@ public class Game extends JPanel {
 
                     // 产生Boss敌机
                     if(curBossNum < 1 && deltaScore >= 100){
+                        MusicManager.stopBgm();
+                        MusicManager.setBgm("src/videos/bgm_boss.wav", true);
+                        MusicManager.playBgm();
                         enemyFactory = new BossEnemyFactory();
                         // 设置boss的攻击方式
                         AbstractAircraft boss = (AbstractAircraft) enemyFactory.create();
@@ -226,6 +231,7 @@ public class Game extends JPanel {
             }
             // 看是否被命中
             if(heroAircraft.crash(bullet)){
+                MusicManager.playSound("src/videos/bullet_hit.wav");
                 heroAircraft.decreaseHp(bullet.getPower());
                 bullet.vanish();
             }
@@ -243,11 +249,15 @@ public class Game extends JPanel {
                     continue;
                 }
                 if (enemyAircraft.crash(bullet)) {
+                    // 播放击中音效
+                    MusicManager.playSound("src/videos/bullet_hit.wav");
                     // 敌机撞击到英雄机子弹
                     // 敌机损失一定生命值
                     enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
                     if (enemyAircraft.notValid()) {
+                        // 播放爆炸音效
+                        MusicManager.playSound("src/videos/bomb_explosion.wav");
                         // 在敌机爆炸处产生道具
                         int posX = enemyAircraft.getLocationX();
                         int posY = enemyAircraft.getLocationY();
@@ -256,6 +266,9 @@ public class Game extends JPanel {
 
                         // 看被击毁的是不是boss机
                         if(enemyAircraft.getClass().getName().endsWith("BossEnemy")){
+                            MusicManager.stopBgm();
+                            MusicManager.setBgm("src/videos/bgm.wav", true);
+                            MusicManager.playBgm();
                             curBossNum = 0;
                             deltaScore = 0;
                             score += 500;
@@ -288,6 +301,8 @@ public class Game extends JPanel {
                 continue;
             }
             if(heroAircraft.crash(prop)){
+                // 播放获得道具的音效
+                MusicManager.playSound("src/videos/get_supply.wav");
                 // 获得不同的道具对应不同的效果
                 String[] got = prop.getClass().getName().split("\\.");
                 String gotItem = got[got.length - 1];
