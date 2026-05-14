@@ -5,4 +5,5 @@ import edu.hitsz.basic.AbstractFlyingObject;
 
 public interface EnemyFactory {
     public abstract AbstractFlyingObject create();
+    public void updateProperty();
 }

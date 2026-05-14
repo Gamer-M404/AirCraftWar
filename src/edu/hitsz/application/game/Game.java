@@ -1,8 +1,10 @@
-package edu.hitsz.application;
+package edu.hitsz.application.game;
 
 import edu.hitsz.aircraft.*;
+import edu.hitsz.application.HeroController;
+import edu.hitsz.application.ImageManager;
+import edu.hitsz.application.Main;
 import edu.hitsz.dao.LeaderBoardDaoImpl;
-import edu.hitsz.dao.LeaderBoradItem;
 import edu.hitsz.factory.enemy.BossEnemyFactory;
 import edu.hitsz.factory.enemy.EnemyCreator;
 import edu.hitsz.music.MusicManager;
@@ -21,12 +23,7 @@ import edu.hitsz.shootStrategy.StraightShoot;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
@@ -36,7 +33,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * 游戏主面板，游戏启动
  * @author hitsz
  */
-public class Game extends JPanel {
+public abstract class Game extends JPanel {
 
     private int backGroundTop = 0;
 
@@ -64,8 +61,12 @@ public class Game extends JPanel {
     private final AbstractObserver bombObserver = new BombTrigger();
     private final AbstractObserver freezeObserver = new FreezeTrigger();
 
+    // 英雄机是否获得火力道具
+    private boolean getBulletProp = false;
+    private boolean getBulletPlusProp = false;
+
     // 创建飞行物的工厂
-    private EnemyCreator enemyFactory;
+    protected EnemyCreator enemyFactory;
     private RandomCreator randomCreator;
 
     //屏幕中出现的敌机最大数量
@@ -128,10 +129,14 @@ public class Game extends JPanel {
         // 播放bgm
         MusicManager.setBgm("src/videos/bgm.wav", true);
         MusicManager.playBgm();
+
+
         // 定时任务：绘制、对象产生、碰撞判定、及结束判定
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
+                // 不断加大游戏难度
+                updateDifficulty();
 
                 enemySpawnCounter++;
                 if (enemySpawnCounter >=enemySpawnCycle) {
@@ -157,17 +162,19 @@ public class Game extends JPanel {
                         enemyAircrafts.add(enemy);
                     }
 
-                    // 产生Boss敌机
-                    if(curBossNum < 1 && deltaScore >= 100){
-                        MusicManager.stopBgm();
-                        MusicManager.setBgm("src/videos/bgm_boss.wav", true);
-                        MusicManager.playBgm();
-                        enemyFactory = new BossEnemyFactory();
-                        // 设置boss的攻击方式
-                        AbstractAircraft boss = (AbstractAircraft) enemyFactory.create();
-                        boss.setShootStrategy(new RingShoot());
-                        enemyAircrafts.add(boss);
-                        curBossNum = 1;
+                    if (canGenerateBoss()) {
+                        // 产生Boss敌机
+                        if(curBossNum < 1 && deltaScore >= 100){
+                            MusicManager.stopBgm();
+                            MusicManager.setBgm("src/videos/bgm_boss.wav", true);
+                            MusicManager.playBgm();
+                            enemyFactory = new BossEnemyFactory();
+                            // 设置boss的攻击方式
+                            AbstractAircraft boss = (AbstractAircraft) enemyFactory.create();
+                            boss.setShootStrategy(new RingShoot());
+                            enemyAircrafts.add(boss);
+                            curBossNum = 1;
+                        }
                     }
                 }
 
@@ -194,6 +201,49 @@ public class Game extends JPanel {
     //***********************
     //      Action 各部分
     //***********************
+    protected void updateDifficulty(){}
+
+    // 英雄机获得火力道具
+    private void heroBulletUp(){
+        if (getBulletProp || getBulletPlusProp) {
+            return;
+        }
+
+        heroAircraft.setShootNum(3);
+        heroAircraft.setShootStrategy(new ScatterShoot());
+        getBulletProp = true;
+
+        javax.swing.Timer timer1 = new javax.swing.Timer(10 * 1000, null);
+        timer1.addActionListener(e -> {
+            heroAircraft.setShootNum(1);
+            heroAircraft.setShootStrategy(new StraightShoot());
+            getBulletProp = false;
+            timer1.stop();
+        });
+        timer1.setRepeats(false);
+        timer1.start();
+    }
+
+    // 英雄机拿到超级火力道具
+    private void heroBulletPlusUp(){
+        if (getBulletPlusProp){
+            return;
+        }
+
+        heroAircraft.setShootNum(10);
+        heroAircraft.setShootStrategy(new RingShoot());
+        getBulletPlusProp = true;
+
+        javax.swing.Timer timer2 = new javax.swing.Timer(7 * 1000, null);
+        timer2.addActionListener(e -> {
+            heroAircraft.setShootNum(1);
+            heroAircraft.setShootStrategy(new StraightShoot());
+            getBulletPlusProp = false;
+            timer2.stop();
+        });
+        timer2.setRepeats(false);
+        timer2.start();
+    }
 
     private void shootAction() {
         shootCounter++;
@@ -326,17 +376,13 @@ public class Game extends JPanel {
                     heroAircraft.setHp(Math.min(heroAircraft.getHp() + 20, heroAircraft.getMaxHp()));
                 }else if(gotItem.equals("PropBullet")){
                     // 变成三排散射
-                    heroAircraft.setShootNum(3);
-                    heroAircraft.setShootStrategy(new ScatterShoot());
+                    heroBulletUp();
                 }else if(gotItem.equals("PropBulletPlus")){
                     // 环射
-                    heroAircraft.setShootNum(10);
-                    heroAircraft.setShootStrategy(new RingShoot());
+                    heroBulletPlusUp();
                 }else if(gotItem.equals("PropBomb")){
-                    System.out.println("爆炸");
                     bombObserver.trigger();
                 }else if(gotItem.equals("PropFreeze")){
-                    System.out.println("冰冻");
                     freezeObserver.trigger();
                 }else{
                     System.out.println("error!");
@@ -372,11 +418,11 @@ public class Game extends JPanel {
             if(this.onGameOver != null){
                 onGameOver.run();
             }
-
-
-
         }
     };
+
+    // 产生boss机
+    protected boolean canGenerateBoss(){ return true;}
 
     //***********************
     //      Paint 各部分

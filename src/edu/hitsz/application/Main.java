@@ -1,14 +1,15 @@
 package edu.hitsz.application;
 
-import edu.hitsz.dao.LeaderBoradItem;
+import edu.hitsz.application.game.EasyGame;
+import edu.hitsz.application.game.Game;
+import edu.hitsz.application.game.HardGame;
+import edu.hitsz.application.game.NormalGame;
 import edu.hitsz.music.MusicManager;
 import edu.hitsz.ui.LeaderBoardTable;
 import edu.hitsz.ui.StartMenu;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * 程序入口
@@ -33,7 +34,17 @@ public class Main {
             cardJPanel.remove(currentGame);
         }
         // 创建新游戏
-        currentGame = new Game();
+//        currentGame = new NormalGame();
+        if(dataPath.endsWith("easy.txt")){
+            currentGame = new EasyGame();
+        }else if(dataPath.endsWith("normal.txt")){
+            currentGame = new NormalGame();
+        }else if(dataPath.endsWith("hard.txt")){
+            currentGame = new HardGame();
+        }else{
+            System.err.println("无此游戏选项");
+            System.exit(3);
+        }
         currentGame.setDataPath(dataPath);
         // 设置游戏结束要执行的逻辑
         currentGame.setOnGameOver(Main::endGame);

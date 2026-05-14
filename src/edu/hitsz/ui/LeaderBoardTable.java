@@ -1,6 +1,6 @@
 package edu.hitsz.ui;
 
-import edu.hitsz.application.Game;
+import edu.hitsz.application.game.Game;
 import edu.hitsz.application.Main;
 import edu.hitsz.dao.LeaderBoradItem;
 
@@ -27,7 +27,7 @@ public class LeaderBoardTable {
 
     public LeaderBoardTable(String dataBasePath, String mode) {
         String name = JOptionPane.showInputDialog("请输入您的玩家名：");
-        name = name.isEmpty() ? "Unknown" : name;
+        name = name == null || name.isEmpty() ? "Unknown" : name;
         // 读取历史得分榜并打印
         Game.leaderBoardDaoImpl.loadData(dataBasePath);
         // 格式化时间
