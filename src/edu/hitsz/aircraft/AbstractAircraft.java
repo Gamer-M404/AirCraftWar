@@ -4,6 +4,7 @@ import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.shootStrategy.Strategy;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -18,6 +19,7 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
 
     // 采用策略模式发射子弹
     protected Strategy shootStrategy;
+
 
     public AbstractAircraft(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY);
@@ -57,6 +59,7 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
     }
 
     public abstract List<BaseBullet> shoot();
+
 
 }
 

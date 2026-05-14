@@ -33,6 +33,23 @@ public class EliteEnemy extends MobEnemy{
 
     @Override
     public List<BaseBullet> shoot() {
-        return this.shootStrategy.enemyShootStrategy(this, this.direction, this.shootNum, this.power);
+        if(this.getFreezed()){
+            // 冻结不发射子弹
+            return this.shootStrategy.enemyShootStrategy(this, 0,0, 0);
+        }else{
+            return this.shootStrategy.enemyShootStrategy(this, this.direction, this.shootNum, this.power);
+        }
+    }
+
+    @Override
+    public void onBombPicked() {
+        // 坠毁
+        super.onBombPicked();
+    }
+
+    @Override
+    public void onFreezePicked() {
+        // 静止4s后恢复
+        this.freeze(4, true, false);
     }
 }

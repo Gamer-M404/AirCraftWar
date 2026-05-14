@@ -4,6 +4,7 @@ import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.application.ImageManager;
 import edu.hitsz.application.Main;
 
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 
 /**
@@ -31,6 +32,10 @@ public abstract class AbstractFlyingObject {
 
     //有效（生存）标记，标记为 false的对象会在下次刷新时清除
     protected boolean isValid = true;
+
+    // 飞行物是否冻结
+    private boolean isFreezed = false;
+    public boolean getFreezed(){ return this.isFreezed; }
 
     public AbstractFlyingObject() {
     }
@@ -140,6 +145,40 @@ public abstract class AbstractFlyingObject {
 
     public boolean notValid() {
         return !this.isValid;
+    }
+
+    public void freeze(int time_s, boolean isFreeze, boolean isForever){
+        if (isForever){
+            this.speedX = 0;
+            this.speedY = 0;
+            this.isFreezed = true;
+            return;
+        }
+
+        if(this.isFreezed){ return; }
+        int originSpx = this.speedX;
+        int originSpy = this.speedY;
+
+        this.isFreezed = true;
+        if (isFreeze) {
+            this.speedX = 0;
+            this.speedY = 0;
+        }else{
+            this.speedX /= 2;
+            this.speedY /= 2;
+        }
+
+        // 计时
+        Timer timer = new Timer(time_s * 1000, null);
+        timer.addActionListener(e -> {
+            this.speedX = originSpx;
+            this.speedY = originSpy;
+            this.isFreezed = false;
+            timer.stop();
+        });
+
+        timer.setRepeats(false);
+        timer.start();
     }
 
 }

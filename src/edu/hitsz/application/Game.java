@@ -6,6 +6,10 @@ import edu.hitsz.dao.LeaderBoradItem;
 import edu.hitsz.factory.enemy.BossEnemyFactory;
 import edu.hitsz.factory.enemy.EnemyCreator;
 import edu.hitsz.music.MusicManager;
+import edu.hitsz.observer.AbstractObserver;
+import edu.hitsz.observer.BombTrigger;
+import edu.hitsz.observer.FreezeTrigger;
+import edu.hitsz.observer.PropObserver;
 import edu.hitsz.prop.AbstractProp;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
@@ -55,6 +59,10 @@ public class Game extends JPanel {
     private final List<BaseBullet> heroBullets;
     private final List<BaseBullet> enemyBullets;
     private final List<AbstractProp> props;
+
+    // 给炸弹和冰冻等全局道具添加观察者
+    private final AbstractObserver bombObserver = new BombTrigger();
+    private final AbstractObserver freezeObserver = new FreezeTrigger();
 
     // 创建飞行物的工厂
     private EnemyCreator enemyFactory;
@@ -133,6 +141,9 @@ public class Game extends JPanel {
                         // 这里需要随机生成一种敌人
                         enemyFactory = randomCreator.randomlyCreateEnemy();
                         AbstractAircraft enemy = (AbstractAircraft) enemyFactory.create();
+                        // 将产生的敌机加入全局道具的响应者队列
+                        freezeObserver.addResponders((PropObserver) enemy);
+                        bombObserver.addResponders((PropObserver) enemy);
                         // 设置敌人攻击类型
                         String[] enemy_create = enemy.getClass().getName().split("\\.");
                         String enemy_type = enemy_create[enemy_create.length - 1];
@@ -178,7 +189,6 @@ public class Game extends JPanel {
         };
         // 以固定延迟时间进行执行：本次任务执行完成后，延迟 timeInterval 再执行下一次
         timer.schedule(task,0,timeInterval);
-
     }
 
     //***********************
@@ -193,7 +203,13 @@ public class Game extends JPanel {
             heroBullets.addAll(heroAircraft.shoot());
             // TODO 敌机射击
             for(AbstractAircraft enemyAircraft : enemyAircrafts){
-                enemyBullets.addAll(enemyAircraft.shoot());
+                List<BaseBullet>shootBullets =  enemyAircraft.shoot();
+                // 把子弹加进全局道具的响应者队列
+                for(BaseBullet bullet : shootBullets){
+                    bombObserver.addResponders((PropObserver) bullet);
+                    freezeObserver.addResponders((PropObserver) bullet);
+                }
+                enemyBullets.addAll(shootBullets);
             }
         }
     }
@@ -318,8 +334,10 @@ public class Game extends JPanel {
                     heroAircraft.setShootStrategy(new RingShoot());
                 }else if(gotItem.equals("PropBomb")){
                     System.out.println("爆炸");
+                    bombObserver.trigger();
                 }else if(gotItem.equals("PropFreeze")){
                     System.out.println("冰冻");
+                    freezeObserver.trigger();
                 }else{
                     System.out.println("error!");
                     System.exit(1);

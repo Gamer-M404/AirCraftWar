@@ -1,0 +1,65 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+Interface PropObserver{
+    + {abstract} onBombPicked() : void
+    + {abstract} onFreezePicked() : void
+}
+
+Class MobEnemy{
+    + onBombPicked() : void
+    + onFreezePicked() : void
+}
+
+Class EliteEnemy{
+    + onBombPicked() : void
+    + onFreezePicked() : void
+}
+
+Class ElitePlusEnemy{
+    + onBombPicked() : void
+    + onFreezePicked() : void
+}
+
+Class EliteProEnemy{
+    + onBombPicked() : void
+    + onFreezePicked() : void
+}
+
+Class EnemyBullet{
+    + onBombPicked() : void
+    + onFreezePicked() : void
+}
+
+MobEnemy <|.. EliteEnemy
+MobEnemy <|.. ElitePlusEnemy
+MobEnemy <|.. EliteProEnemy
+
+PropObserver <|.. MobEnemy
+PropObserver <|.. EnemyBullet
+
+abstract Class AbstractObserver{
+    - responders : List<PropObserver>
+    + addResponder(responder : PropObserver)
+    + deleteResponder(responder : PropObserver)
+    + {abstract} notifyResponders() : void
+    + {abstract} trigger() : void
+}
+
+Class BombTrigger{
+    + {abstract} notifyResponders() : void
+    + {abstract} trigger() : void
+}
+
+Class FreezeTrigger{
+    + {abstract} notifyResponders() : void
+    + {abstract} trigger() : void
+}
+
+AbstractObserver <|-- BombTrigger
+AbstractObserver <|-- FreezeTrigger
+
+PropObserver <.. AbstractObserver
+
+
+@enduml
